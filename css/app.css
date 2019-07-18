@@ -1,0 +1,44 @@
+/* body {
+  background: #20262E;
+  padding: 20px;
+  font-family: Helvetica;
+} */
+
+/* #app {
+  background: #fff;
+  border-radius: 4px;
+  padding: 20px;
+  transition: all 0.2s;
+} */
+
+/* li {
+  margin: 8px 0;
+} */
+
+/* h2 {
+  font-weight: bold;
+  margin-bottom: 15px;
+} */
+
+/* del {
+  color: rgba(0, 0, 0, 0.3);
+} */
+
+.row {
+    background: #f8f9fa;
+    margin-top: 10px;
+}
+
+.col {
+    border: 3px #6c757d;
+    padding: 10px;
+}
+
+.progress {
+    background-color: #898c8f;
+    height: 99%;
+}
+
+.col-buttons {
+    width: 50px;
+}
