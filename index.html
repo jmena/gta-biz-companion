@@ -1,111 +1,145 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" type="text/css"
-          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!--    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">-->
+
+
+    <!--    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
-    <link rel="stylesheet" type="text/css"
-          href="/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-    <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
 
 </head>
 
 <body>
 
 <div id="app" class="container">
-    <div class="row">
-
-        <div class="col">
-            Game:
+    <div class="card border mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Game:</h5>
             <button v-on:click="pauseGame()" v-if="active" class="button btn-success">Active</button>
-            <button v-on:click="activateGame()" v-if="!active" class="button btn-danger">Paused - click here to
-                activate
+            <button v-on:click="activateGame()" v-if="!active" class="button btn-danger">
+                Paused - click here to activate
             </button>
+            <input type="checkbox" id="checkbox" v-model="sellRemote">
+            <label for="checkbox">Sell remote</label>
             <!-- <button v-on:click="tick()" class="button btn-primary">Tick</button> -->
 
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <table class="table table-striped table-sm table-responsive-sm">
-                <thead class="thead-dark">
-                <tr>
-                    <!-- <th>Actions</th> -->
-                    <th>Name</th>
-                    <th>Upgrades</th>
-                    <th>Status</th>
-                    <th>Stock %</th>
-                    <th>Stock ETA</th>
-                    <th>Stock Units</th>
-                    <th>Stock $</th>
-                    <th>Supplies ETA</th>
-                    <th>Supplies Units</th>
-                    <th>Supplies %</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(biz, index) in businesses">
-                    <!--             <td class="text-right">
-                                  <button type="button" class="btn btn-primary btn-sm" v-on:click="showChangeStockDialog(index)">
-                                  <small>1</small>
-                                </button>
-                                  <button type="button" class="btn btn-primary btn-sm" v-on:click="showChangeSuppliesDialog(index)">
-                                  <small>2</small>
-                                </button>
-                                </td>
-                                 -->
-                    <td>
-                        {{biz.name}}
-                    </td>
-                    <td>
-                        <a href="#" v-on:click="changeUpgrades(index)">
-                            <small>{{biz.upgrades[biz.upgrade].name}}</small>
-                        </a>
-                    </td>
-                    <td>
-                        <span class="badge badge-secondary badge-success"
-                              v-if="biz.supplies > 0 && biz.stock < biz.capacity">
-                            Active
-                        </span>
-                        <span class="badge badge-secondary badge-danger" v-if="biz.supplies == 0">
-                                No supplies
-                        </span>
-                        <span class="badge badge-secondary badge-danger" v-if="biz.stock == biz.capacity">
-                                Full stock
-                        </span>
-                    </td>
-                    <td class="text-right">
-                        {{100 * biz.stock / biz.capacity | round(1)}}
-                    </td>
-                    <td class="text-right">
-                        {{etaFullStock(biz) | formatTime}}
-                    </td>
-                    <td class="text-right">
-                        <a href="#" v-on:click="showChangeStockDialog(index)">
-                            {{biz.stock | round(1)}}
-                        </a>
-                    </td>
-                    <td class="text-right">
-                        {{biz.stock * biz.upgrades[biz.upgrade].unitPrice | round(0)}}
-                    </td>
-                    <td class="text-right">
-                        {{etaResupply(biz) | formatTime}}
-                    </td>
-                    <td class="text-right">
-                        {{biz.supplies * biz.resupplyUnits | round(1)}}
-                    </td>
-                    <td class="text-right">
-                        <a href="#" v-on:click="showChangeSuppliesDialog(index)">
-                            {{100 * biz.supplies | round(0)}}
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+    <div class="card border mb-3"
+         v-for="(biz, index) in businesses">
+        <div class="card-header"
+            v-bind:class="bizHeader(biz)">
+            <b>{{biz.name}}</b>
+            <span class="oi oi-cog" v-on:click="biz.editMode = true"></span>
         </div>
+        <div class="card-body">
+            <div class="row with-content">
+                <div class="col-sm-3">
+                    <b>Upgrades:</b>
+                </div>
+                <div class="col" v-if="!biz.editMode">
+                    {{ biz.upgrades[biz.upgrade].name }}
+                </div>
+                <div class="col" v-if="biz.editMode">
+                    <select v-model="biz.upgrade">
+                        <option v-for="(upgrade, upgIdx) in biz.upgrades" v-bind:value="upgIdx">
+                            {{ upgrade.name }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row with-content">
+                <div class="col-sm-3">
+                    <b>Stock:</b>
+                </div>
+                <div class="col" v-if="!biz.editMode">
+                    {{etaFullStock(biz) | formatTime | orDefault('Full stock')}}
+                    - {{floor(biz.stock)}} of {{biz.capacity | round(1)}} units <!-- units -->
+                    - GTA$ {{floor(biz.stock) * biz.upgrades[biz.upgrade].unitPrice * (sellRemote ? 1.5 : 1.0) | round(0) | money}}
+                </div>
+                <div class="col" v-if="biz.editMode">
+                    <input @input="handleChangeStock($event.target, biz)">%
+                    - {{biz.stock}} units of {{biz.capacity}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <!-- empty -->
+                </div>
+                <div class="col">
+
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-stock" role="progressbar" v-bind:style="{width: (biz.stock / biz.capacity * 100) + '%'}">
+                            {{100 * biz.stock / biz.capacity | round(1)}}% <!-- percentage -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row with-content" v-if="biz.type != 'nightclub'">
+                <div class="col-sm-3">
+                    <b>Supplies</b>
+                </div>
+                <div class="col" v-if="!biz.editMode">
+                    {{etaResupply(biz) | formatTime | orDefault('No supplies')}}
+                    - {{biz.supplies * biz.resupplyUnits | round(0)}} of {{biz.resupplyUnits | round(2)}} units
+                </div>
+                <div class="col" v-if="biz.editMode">
+                    <input @input="handleChangeSupplies($event.target, biz)">%
+                    - {{biz.supplies * biz.resupplyUnits | round(0)}} of {{biz.resupplyUnits | round(2)}} units
+                </div>
+            </div>
+            <div class="row" v-if="biz.type != 'nightclub'">
+                <div class="col-sm-3">
+                    <!-- empty -->
+                </div>
+                <div class="col">
+                    <div class="progress" >
+                        <div class="progress-bar border border-light progress-bar-supplies" role="progressbar" v-bind:style="{width: (biz.supplies * 100) + '%'}">
+                            {{100 * biz.supplies | round(0)}}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row with-content" v-if="biz.type == 'nightclub'">
+                <div class="col-sm-3">
+                    <b>Technician?</b>
+                </div>
+                <div class="col">
+                    <input type="checkbox" v-model="biz.hasTech" v-if="biz.editMode">
+                    {{ biz.hasTech ? 'Yes' : 'No' }}
+                </div>
+            </div>
+
+            <div class="row with-content">
+                <div class="col-sm-3">
+                    <b>Max. vehicles</b>
+                </div>
+                <div class="col">
+                    {{vehicles(biz)}}
+                </div>
+            </div>
+
+            <div class="row with-content" v-if="biz.editMode">
+                <div class="col-sm-3">
+                    <b>Edit mode:</b>
+                </div>
+                <div class="col">
+                    <button type="button" v-on:click="biz.editMode = false" class="btn btn-primary">Confirm changes</button>
+                </div>
+            </div>
+
+        </div>
+
+
     </div>
 
     <div class="row">
@@ -114,8 +148,8 @@
                 Scope (read only):
 
                 <ul>
-                    <li>Sell remote</li>
-                    <li>No player bonus</li>
+                    <li><s>Sell remote</s></li>
+                    <li>Player bonus</li>
                     <li>Show vehicles per delivery and ETA to get more vehicles</li>
                     <li>Don't show summary (status and $)</li>
                     <li>Select businesses</li>
@@ -141,7 +175,7 @@
                 </div>
                 <div class="modal-body">
                     Reset "{{businesses[resupplyIdx].name}}" business by setting the bar to the following
-                    percentaje?<input type="email" class="form-control" id="resupplyValueTxt" placeholder="100%">
+                    percentage?<input type="email" class="form-control" id="resupplyValueTxt" placeholder="100%">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
@@ -153,6 +187,17 @@
 
 </div>
 
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://unpkg.com/vue@latest/dist/vue.min.js"></script>
 <script src="/js/app.js"></script>
 </body>
 

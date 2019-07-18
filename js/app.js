@@ -11,13 +11,14 @@ var myVueApp = new Vue({
     data: {
         lastUpdate: 0,      // epoch seconds of last update
         active: false,                   // should update the values?
-
+        sellRemote: false,
         resupplyIdx: 0,
         resupplyValue: 0,
         businesses: [
             {
                 name: "Bunker",
-                stock: 0.0,  // current stock in units
+                editMode: false,
+                stock: 100.0,  // current stock in units
                 supplies: 1.0,  // current supplies bar in [0,1] percentage
                 capacity: 100.0,  // max capacity in units
                 resupplyCost: 75000.0,  // cost of resupplying if business is supply bar is empty
@@ -42,16 +43,16 @@ var myVueApp = new Vue({
             },
             {
                 name: "Coke",
-                stock: 0.0,
+                editMode: false,
+                stock: 4.0,
                 supplies: 0.0,
                 capacity: 10.0,
                 resupplyCost: 75000.0,
                 resupplyUnits: 3.33333333333333333333,
                 vehicles: [
-                    // if units > # then the maximum number of vehicles is #
                     {units: 6.0, count: 4},
-                    {units: 5.0, count: 3},
-                    {units: 3.0, count: 3},
+                    {units: 2.5, count: 3},
+                    {units: 1.5, count: 2},
                     {units: 0.0, count: 1},
                 ],
                 upgrade: 3.0,
@@ -64,11 +65,15 @@ var myVueApp = new Vue({
             },
             {
                 name: "Meth",
+                editMode: false,
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 20.0,
                 resupplyCost: 75000.0,
                 resupplyUnits: 6.66666666666666666667,
+                vehicles: [
+                    {units: 10000, count: 100}, // na
+                ],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 30, unitPrice: 8500},
@@ -79,11 +84,15 @@ var myVueApp = new Vue({
             },
             {
                 name: "Counterfeit cash",
+                editMode: false,
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 40.0,
                 resupplyCost: 75000.0,
                 resupplyUnits: 20.0,
+                vehicles: [
+                    {units: 10000, count: 100}, // na
+                ],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 12, unitPrice: 3500},
@@ -94,11 +103,15 @@ var myVueApp = new Vue({
             },
             {
                 name: "Weed",
+                editMode: false,
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 80.0,
                 resupplyCost: 75000.0,
                 resupplyUnits: 40.0,
+                vehicles: [
+                    {units: 10000, count: 100}, // na
+                ],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 6, unitPrice: 1500},
@@ -109,11 +122,15 @@ var myVueApp = new Vue({
             },
             {
                 name: "Documents Forgery",
+                editMode: false,
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 60.0,
                 resupplyCost: 75000.0,
                 resupplyUnits: 60.0,
+                vehicles: [
+                    {units: 10000, count: 100}, // na
+                ],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 5, unitPrice: 1000},
@@ -124,12 +141,16 @@ var myVueApp = new Vue({
             },
             //
             {
-                name: "NC - South American Imports (Coke)",
+                name: "Nightclub - South American Imports (Coke)",
+                editMode: false,
+                type: "nightclub",
+                hasTech: true,
                 stock: 0.0,
                 supplies: 0.0,  // should always be 1 for NC, as long as there's a technician
                 capacity: 10.0, // depends on how many floors we have in the nc. max 10, min 2
                 resupplyCost: 0.0,
                 resupplyUnits: 10.0, // doesn't matter
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 240, unitPrice: 20000},
@@ -137,12 +158,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Cargo/Shipments (Warehouse/Hangar)",
+                name: "Nightclub - Cargo/Shipments (Warehouse/Hangar)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 50.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 50.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 140, unitPrice: 10000},
@@ -150,12 +174,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Pharmaceutical Research (Meth)",
+                name: "Nightclub - Pharmaceutical Research (Meth)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 20.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 20.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 120, unitPrice: 8500},
@@ -163,12 +190,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Sporting Goods (Bunker)",
+                name: "Nightclub - Sporting Goods (Bunker)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 100.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 100.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 80, unitPrice: 5000},
@@ -176,12 +206,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Cash Creation (Cash)",
+                name: "Nightclub - Cash Creation (Cash)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 40.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 40.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 60, unitPrice: 3500},
@@ -189,12 +222,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Organic Produce (Weed)",
+                name: "Nightclub - Organic Produce (Weed)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
-                supplies: 1.0,
+                supplies: 0.0,
                 capacity: 80.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 80.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 40, unitPrice: 1500},
@@ -202,12 +238,15 @@ var myVueApp = new Vue({
                 ]
             },
             {
-                name: "NC - Printing and Copying (Documents)",
+                name: "Nightclub - Printing and Copying (Documents)",
+                editMode: false,
+                type: "nightclub",
                 stock: 0.0,
                 supplies: 0.0,
                 capacity: 60.0,
                 resupplyCost: 0.0,
                 resupplyUnits: 60.0,
+                vehicles: [{units: 0, count: 1}],
                 upgrade: 0,
                 upgrades: [
                     {name: "None", mins: 30, unitPrice: 1000},
@@ -300,8 +339,11 @@ var myVueApp = new Vue({
                 var biz = this.businesses[i];
                 var upgrade = biz.upgrades[biz.upgrade];
 
+                if (biz.type === 'nightclub') {
+                    biz.supplies = biz.hasTech ? biz.capacity : 0;
+                }
                 // calculate if business is active or not
-                if (biz.supplies == 0 || biz.stock == biz.capacity) {
+                if (biz.supplies == 0 || biz.stock == biz.capacity || biz.editMode) {
                     continue;
                 }
 
@@ -319,6 +361,9 @@ var myVueApp = new Vue({
                 }
 
                 biz.stock = biz.stock + deltaUnits;
+                if (biz.stock > biz.capacity) {
+                    biz.stock = biz.capacity;
+                }
                 biz.supplies = biz.supplies - deltaUnits / biz.resupplyUnits;
                 if (biz.supplies < 0.000001) {
                     biz.supplies = 0;
@@ -343,8 +388,63 @@ var myVueApp = new Vue({
             }
             $('#resupplyModal').modal('hide');
         },
+        bizHeader: function (biz) {
+            var threshold = 15 * 60; // 15 minutes
+            var isActive = biz.supplies > 0 && biz.stock < biz.capacity;
+            var isWarning = this.etaFullStock(biz) < threshold || this.etaResupply(biz) < threshold ;
+            if (!isActive) {
+                return ['text-light', 'bg-danger'];
+            } else if (isWarning) {
+                return ['text-dark', 'bg-warning'];
+            } else {
+                return ['text-light', 'bg-success'];
+            }
+
+        },
+        floor: function (x) {
+            return Math.floor(x);
+        },
+
+        handleChangeStock: function (target, biz) {
+            var number = Number.parseFloat(target.value);
+            if (Number.isNaN(number)) {
+                biz.stock = 0;
+                return;
+            }
+            biz.stock = biz.capacity * number / 100;
+            if (biz.stock > biz.capacity) {
+                biz.stock = biz.capacity;
+            } else if (biz.stock < 0) {
+                biz.stock = 0;
+            }
+        },
+
+        handleChangeSupplies: function (target, biz) {
+            var number = Number.parseFloat(target.value);
+            if (Number.isNaN(number)) {
+                biz.supplies = 0;
+                return;
+            }
+            biz.supplies = number / 100;
+            if (biz.supplies > 1) {
+                biz.supplies = 1;
+            } else if (biz.supplies < 0) {
+                biz.supplies = 0;
+            }
+        },
+
+        vehicles: function(biz) {
+            for (var i=0; i < biz.vehicles.length; i++) {
+                if (biz.stock >= biz.vehicles[i].units) {
+                    return biz.vehicles[i].count;
+                }
+            }
+            return "N/A";
+        }
     },
-    computed: {},
+    computed: {
+
+    },
     filters: {
         // formats seconds to human format
         formatTime: function (secs) {
@@ -371,7 +471,26 @@ var myVueApp = new Vue({
 
         // rounds a number to the given amount of decimals
         round: function (number, dec) {
-            return number.toFixed(dec);
+            // return number.toFixed(dec);
+            var r = Math.pow(10, dec);
+            return Math.round(number * r) / r;
+        },
+
+        orDefault: function(value, def) {
+            if (!value) {
+                return def;
+            }
+            return value;
+        },
+
+        money: function(number) {
+            var formatter = new Intl.NumberFormat('en-US', {
+                // style: 'decimal',
+                currency: 'USD',
+                minimumFractionDigits: 0
+            });
+            return formatter.format(number);
+
         }
 
     },
@@ -383,6 +502,3 @@ setInterval(
     },
     1000
 );
-
-console.log("started");
-// window.myVueApp = myVueApp;

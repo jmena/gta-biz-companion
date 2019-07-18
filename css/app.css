@@ -1,44 +1,71 @@
-/* body {
-  background: #20262E;
-  padding: 20px;
-  font-family: Helvetica;
-} */
+/*!* body {*/
+/*  background: #20262E;*/
+/*  padding: 20px;*/
+/*  font-family: Helvetica;*/
+/*} *!*/
 
-/* #app {
-  background: #fff;
-  border-radius: 4px;
-  padding: 20px;
-  transition: all 0.2s;
-} */
+/*!* #app {*/
+/*  background: #fff;*/
+/*  border-radius: 4px;*/
+/*  padding: 20px;*/
+/*  transition: all 0.2s;*/
+/*} *!*/
 
-/* li {
-  margin: 8px 0;
-} */
+/*!* li {*/
+/*  margin: 8px 0;*/
+/*} *!*/
 
-/* h2 {
-  font-weight: bold;
-  margin-bottom: 15px;
-} */
+/*!* h2 {*/
+/*  font-weight: bold;*/
+/*  margin-bottom: 15px;*/
+/*} *!*/
 
-/* del {
-  color: rgba(0, 0, 0, 0.3);
-} */
+/*!* del {*/
+/*  color: rgba(0, 0, 0, 0.3);*/
+/*} *!*/
 
-.row {
-    background: #f8f9fa;
+/*.row {*/
+/*    background: #f8f9fa;*/
+/*    margin-top: 10px;*/
+/*}*/
+
+/*.card .row {*/
+/*    background: #fefefe;*/
+/*    margin-top: 0px;*/
+/*}*/
+
+/*.col {*/
+/*    border: 3px #6c757d;*/
+/*    padding: 10px;*/
+/*}*/
+
+/*.card .col {*/
+/*    padding: 2px;*/
+/*}*/
+
+
+.progress {
+    /*background-color: #898c8f;*/
+    /*height: 99%;*/
+    width: 300px;
+}
+
+.progress-empty {
+    background-color: #ff7777;
+}
+
+.card-body {
+    padding-top: 0px;
+}
+
+.card-body, .with-content {
     margin-top: 10px;
 }
 
-.col {
-    border: 3px #6c757d;
-    padding: 10px;
-}
+/*.col-buttons {*/
+/*    width: 50px;*/
+/*}*/
 
-.progress {
-    background-color: #898c8f;
-    height: 99%;
-}
-
-.col-buttons {
-    width: 50px;
-}
+/*p.card-text {*/
+/*    margin-bottom: 0px;*/
+/*}*/
