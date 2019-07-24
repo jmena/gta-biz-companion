@@ -269,7 +269,7 @@ var router = new VueRouter({
 });
 
 var myVueApp = new Vue({
-    router,
+    router: router,
     el: "#app",
     data: {
         db: db,
@@ -452,7 +452,7 @@ var myVueApp = new Vue({
         resupply: function (biz) {
             Vue.set(biz, 'resupply', true);
             Vue.set(biz, 'resupplyTimer', 10 * 60);  // 10 mins
-            Vue.set(biz, 'resupplyTimer', 30);  // 30 secs
+            Vue.set(biz, 'resupplyTimer', 30);  // debug: 30 secs
         },
 
         saveState: function () {
@@ -515,8 +515,9 @@ var myVueApp = new Vue({
 
     },
     mounted: function() {
-        q = this.$route.query.q
-        this.externalState = JSON.parse(q);
+        var query = this.$route.query.q
+        this.externalState = JSON.parse(query);
+        this.externalState.active = false;
     },
 });
 
