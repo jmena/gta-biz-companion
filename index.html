@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css"
           href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/app.css">
-
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
 </head>
 
@@ -27,26 +27,68 @@
     <div class="card border mb-3">
         <div class="card-body">
             <h5 class="card-title">Game:</h5>
+
             <button v-on:click="pauseGame()" v-if="externalState.active" class="button btn-success">Active</button>
             <button v-on:click="activateGame()" v-if="!externalState.active" class="button btn-danger">
                 Paused - click here to activate
             </button>
-            <br>
-            <br>
-            <input type="checkbox" v-model="externalState.sellRemote">
-            Sell remote
-            <br>
-            <br>
-            <input type="checkbox" v-model="externalState.detailed">
-            Detailed data
-            <br>
-            <br>
-            <!-- <button v-on:click="tick()" class="button btn-primary">Tick</button> -->
-
         </div>
     </div>
 
 
+    <div class="card border mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Options</h5>
+
+            <div class="row">
+                <div class="col">
+                    <input type="checkbox" v-model="externalState.sellRemote">
+                    Sell remote
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input type="checkbox" v-model="externalState.detailed">
+                    Detailed data
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <input type="checkbox" v-model="internalState.editBusinesses">
+                    Edit businesses
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card border mb-3" v-if="internalState.editBusinesses">
+        <div class="card-body">
+            <h5 class="card-title">Edit businesses</h5>
+            
+            <div class="row" v-for="(biz, index) in externalState.businesses">
+                <div class="col">
+                    {{db.businesses[biz.id].name}}
+
+                    <dl class="row">
+                        <dd class="col-sm-2 text-right">Upgrade</dd>
+                        <dd class="col-sm-10">
+                            <select v-model="biz.upgrade">
+                                <option v-for="(upgrade, upgIdx) in db.businesses[biz.id].upgrades" v-bind:value="upgIdx">
+                                    {{ upgrade.name }}
+                                </option>
+                            </select>
+                        </dd>
+
+                        <dd class="col-sm-2 text-right">Active</dd>
+                        <dd class="col-sm-10">
+                            <input type="checkbox" v-model="biz.active">
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <div class="row">
@@ -130,17 +172,18 @@
 <!--
 list of TODO features:
 
--   allow to save/restore state (in the url)
+[x] allow to edit upgrade
+[x] allow to save/restore state (in the url)
 -   allow to press ENTER to accept changes and ESC to cancel
 -   edit gain focus of the textbox
 -   Better support for NC:
-    -   allow to select which businesses has technicians
+    [x] allow to select which businesses has technicians
 [x] use less space in screen. It would be nice to see only the critical information. ETA.
 [x] allow to set the supplies and stock in bars
 [x] allow to cancel changes in stock supplies
 [x] preload data when editing biz.
 -   show a summary
--   allow to choose which biz are active
+[x] allow to choose which biz are active
 [x] allow delayed resupply (full bar after 10 minutes)
 [x]  allow to see extended information
 -   allow more options
@@ -169,6 +212,8 @@ list of TODO features:
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/vue@latest/dist/vue.js"></script>
 <script src="https://unpkg.com/vue-router"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 <script src="/js/app.js"></script>
 </body>
 

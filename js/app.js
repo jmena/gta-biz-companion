@@ -230,6 +230,7 @@ var createInternalState = function () {
     };
     return {
         businesses: businesses,
+        editBusinesses: false,
     };
 };
 
@@ -255,7 +256,7 @@ var createBusinesses = function () {
         businesses.push({
             id: key,
             active: true,
-            upgrade: key === 'bk' ? 3 : 0,
+            upgrade: 0,
             stock: 0,
             supplies: 0,
         });
@@ -371,8 +372,6 @@ var myVueApp = new Vue({
                     biz.supplies = 0;
                 }
             }
-
-            this.saveState();
         },
         bizHeader: function (biz) {
             var threshold = 15 * 60; // 15 minutes
@@ -461,6 +460,8 @@ var myVueApp = new Vue({
             });
         }
     },
+    watch: {
+    },
     computed: {
 
     },
@@ -527,3 +528,9 @@ setInterval(
     },
     1000
 );
+
+myVueApp.$watch('externalState', function (newState, oldState) {
+    this.saveState();
+}, {
+    deep: true
+});
