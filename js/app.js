@@ -372,9 +372,7 @@ var myVueApp = new Vue({
                 }
             }
 
-            this.$router.replace({
-                path: "?q=" + JSON.stringify(this.externalState),
-            });
+            this.saveState();
         },
         bizHeader: function (biz) {
             var threshold = 15 * 60; // 15 minutes
@@ -456,6 +454,12 @@ var myVueApp = new Vue({
             Vue.set(biz, 'resupplyTimer', 10 * 60);  // 10 mins
             Vue.set(biz, 'resupplyTimer', 30);  // 30 secs
         },
+
+        saveState: function () {
+            this.$router.replace({
+                path: "?q=" + JSON.stringify(this.externalState),
+            });
+        }
     },
     computed: {
 
@@ -512,7 +516,7 @@ var myVueApp = new Vue({
     },
     mounted: function() {
         q = this.$route.query.q
-        console.log(q)
+        this.externalState = JSON.parse(q);
     },
 });
 
