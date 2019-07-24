@@ -436,6 +436,11 @@ var myVueApp = new Vue({
             this.internalState.businesses[biz.id][attr + '-edit'] = true;
             this.internalState.businesses[biz.id][attr + '-edit-value'] = Math.round(biz[attr] * 10) / 10;
             this.internalState.businesses[biz.id][attr + '-edit-saved'] = biz[attr];
+            var callerRefs = this.$refs;
+            setTimeout(function () {
+                callerRefs['txt-' + attr+ '-edit-' + biz.id][0].focus();
+            });
+
         },
 
         acceptBizChange: function (biz, attr) {

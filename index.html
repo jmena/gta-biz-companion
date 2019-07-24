@@ -125,6 +125,7 @@
                                 <template v-if="internalState.businesses[biz.id]['stock-edit']">
                                     <input class="text-right edit-text-box"
                                            type="number"
+                                           :ref="'txt-stock-edit-'  + biz.id"
                                            v-model.number="internalState.businesses[biz.id]['stock-edit-value']">
                                     <small><span class="oi oi-check" v-on:click="acceptBizChange(biz, 'stock')"></span></small>
                                     <small><span class="oi oi-x" v-on:click="cancelBizChange(biz, 'stock')"></span></small>
@@ -145,6 +146,7 @@
                                 <template v-if="internalState.businesses[biz.id]['supplies-edit']">
                                     <input class="text-right edit-text-box"
                                            type="number"
+                                           :ref="'txt-supplies-edit-'  + biz.id"
                                            v-model.number="internalState.businesses[biz.id]['supplies-edit-value']">
                                     <small><span class="oi oi-check" v-on:click="acceptBizChange(biz, 'supplies')"></span></small>
                                     <small><span class="oi oi-x" v-on:click="cancelBizChange(biz, 'supplies')"></span></small>
