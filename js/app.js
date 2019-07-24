@@ -7,23 +7,15 @@
 // - https://gtaforums.com/topic/912818-business-knowledge-base-after-hours/page/4/?tab=comments#comment-1070339962
 // - https://www.reddit.com/r/gtaonline/comments/91tyvu/nightclub_earnings_table_and_guide/
 
-var rawData = {
-    lastUpdate: 0,      // epoch seconds of last update
-    active: false,                   // should update the values?
-    sellRemote: false,
-    detailed: false,
-    resupplyIdx: 0,
-    resupplyValue: 0,
-    businesses: [
-        {
+var db = {
+    businesses: {
+        "bk": {
             id: "bk",
             name: "Bunker",
             type: "regular",
-            stock: 99.0,  // current stock in units
-            supplies: 0.99,  // current supplies bar in [0,1] percentage
             capacity: 100.0,  // max capacity in units
             resupplyCost: 75000.0,  // cost of resupplying if business is supply bar is empty
-            resupplyUnits: 20.0,  // number of units in a full resupply.
+            resupplyUnits: 20.0,    // number of units in a full resupply.
             vehicles: [
                 // if units > # then the maximum number of vehicles is #
                 {units: 75, count: 4},
@@ -31,7 +23,6 @@ var rawData = {
                 {units: 25, count: 3},
                 {units: 0, count: 1},
             ],
-            upgrade: 3.0,  // index - which upgrade should be applied
             upgrades: [
                 // name: name of the upgrade
                 // mins: minutes required to produce one unit
@@ -42,12 +33,10 @@ var rawData = {
                 {name: "Equip+Staff", mins: 7, unitPrice: 7000},
             ]
         },
-        {
+        "ck": {
             id: "ck",
             name: "Coke",
             type: "regular",
-            stock: 2.0,
-            supplies: 0.5,
             capacity: 10.0,
             resupplyCost: 75000.0,
             resupplyUnits: 3.33333333333333333333,
@@ -57,7 +46,6 @@ var rawData = {
                 {units: 1.5, count: 2},
                 {units: 0.0, count: 1},
             ],
-            upgrade: 3.0,
             upgrades: [
                 {name: "None", mins: 50, unitPrice: 20000},
                 {name: "Equip", mins: 40, unitPrice: 24000},
@@ -65,19 +53,16 @@ var rawData = {
                 {name: "Equip+Staff", mins: 30, unitPrice: 28000},
             ]
         },
-        {
+        "me": {
             id: "me",
             name: "Meth",
             type: "regular",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 20.0,
             resupplyCost: 75000.0,
             resupplyUnits: 6.66666666666666666667,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 30, unitPrice: 8500},
                 {name: "Equip", mins: 24, unitPrice: 10200},
@@ -85,19 +70,16 @@ var rawData = {
                 {name: "Equip+Staff", mins: 18, unitPrice: 11900},
             ]
         },
-        {
+        "cc": {
             id: "cc",
             name: "Counterfeit cash",
             type: "regular",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 40.0,
             resupplyCost: 75000.0,
             resupplyUnits: 20.0,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 12, unitPrice: 3500},
                 {name: "Equip", mins: 10, unitPrice: 4200},
@@ -105,19 +87,16 @@ var rawData = {
                 {name: "Equip+Staff", mins: 8, unitPrice: 4900},
             ]
         },
-        {
+        "we": {
             id: "we",
             name: "Weed",
             type: "regular",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 80.0,
             resupplyCost: 75000.0,
             resupplyUnits: 40.0,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 6, unitPrice: 1500},
                 {name: "Equip", mins: 5, unitPrice: 1800},
@@ -125,19 +104,16 @@ var rawData = {
                 {name: "Equip+Staff", mins: 4, unitPrice: 2100},
             ]
         },
-        {
+        "df": {
             id: "df",
             name: "Documents Forgery",
             type: "regular",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 60.0,
             resupplyCost: 75000.0,
             resupplyUnits: 60.0,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 5, unitPrice: 1000},
                 {name: "Equip", mins: 4, unitPrice: 1200},
@@ -146,280 +122,263 @@ var rawData = {
             ]
         },
         //
-        {
+        "nc-ck": {
             id: "nc-ck",
             name: "Nightclub - South American Imports (Coke)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,  // should always be 1 for NC, as long as there's a technician
             capacity: 10.0, // depends on how many floors we have in the nc. max 10, min 2
             resupplyCost: 0.0,
-            resupplyUnits: 10.0, // doesn't matter
+            resupplyUnits: 10.0, // does not matter
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 240, unitPrice: 20000},
                 {name: "Equipment", mins: 120, unitPrice: 20000},
             ]
         },
-        {
+        "nc-ca": {
             id: "nc-ca",
             name: "Nightclub - Cargo/Shipments (Warehouse/Hangar)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 50.0,
             resupplyCost: 0.0,
             resupplyUnits: 50.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 140, unitPrice: 10000},
                 {name: "Equipment", mins: 70, unitPrice: 10000},
             ]
         },
-        {
+        "nc-me": {
             id: "nc-me",
             name: "Nightclub - Pharmaceutical Research (Meth)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 20.0,
             resupplyCost: 0.0,
             resupplyUnits: 20.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 120, unitPrice: 8500},
                 {name: "Equipment", mins: 60, unitPrice: 8500},
             ]
         },
-        {
+        "nc-bk": {
             id: "nc-bk",
             name: "Nightclub - Sporting Goods (Bunker)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 100.0,
             resupplyCost: 0.0,
             resupplyUnits: 100.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 80, unitPrice: 5000},
                 {name: "Equipment", mins: 40, unitPrice: 5000},
             ]
         },
-        {
+        "nc-cc": {
             id: "nc-cc",
             name: "Nightclub - Cash Creation (Cash)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 40.0,
             resupplyCost: 0.0,
             resupplyUnits: 40.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 60, unitPrice: 3500},
                 {name: "Equipment", mins: 30, unitPrice: 3500},
             ]
         },
-        {
+        "nc-we": {
             id: "nc-we",
             name: "Nightclub - Organic Produce (Weed)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 80.0,
             resupplyCost: 0.0,
             resupplyUnits: 80.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 40, unitPrice: 1500},
                 {name: "Equipment", mins: 20, unitPrice: 1500},
             ]
         },
-        {
+        "nc-df": {
             id: "nc-df",
             name: "Nightclub - Printing and Copying (Documents)",
             type: "nightclub",
-            stock: 0.0,
-            supplies: 0.0,
             capacity: 60.0,
             resupplyCost: 0.0,
             resupplyUnits: 60.0,
             vehicles: [{units: 0, count: 1}],
-            upgrade: 0,
             upgrades: [
                 {name: "None", mins: 30, unitPrice: 1000},
                 {name: "Equipment", mins: 15, unitPrice: 1000},
             ]
         },
-
-
-    ],
+    },
 };
 
-var processData = function(data) {
-    for (var i=0; i < data.businesses.length; i++) {
-        var biz = data.businesses[i];
-        biz.active = true;
-    }
-    return data;
+var createInternalState = function () {
+    var businesses = {};
+    var businessesKeys =  Object.keys(db.businesses);
+    for (var i=0; i < businessesKeys.length; i++) {
+        var key = businessesKeys[i];
+        businesses[key] = {
+            'stock-edit': false,
+            'stock-edit-value': 0,
+            'supplies-edit': false,
+            'supplies-edit-value': 0,
+        };
+    };
+    return {
+        businesses: businesses,
+    };
 };
+
+var createBusinesses = function () {
+    var businessesKeys = [
+        'bk',
+        'ck',
+        'me',
+        'cc',
+        'we',
+        'df',
+        'nc-ck',
+        'nc-ca',
+        'nc-me',
+        'nc-bk',
+        'nc-cc',
+        'nc-we',
+        'nc-df',
+    ];
+    var businesses = [];
+    for (var i=0; i < businessesKeys.length; i++) {
+        var key = businessesKeys[i];
+        businesses.push({
+            id: key,
+            active: true,
+            upgrade: key === 'bk' ? 3 : 0,
+            stock: 0,
+            supplies: 0,
+        });
+    };
+    return businesses;
+}
+
+var router = new VueRouter({
+    mode: 'history',
+    routes: []
+});
 
 var myVueApp = new Vue({
+    router,
     el: "#app",
-    data: processData(rawData),
+    data: {
+        db: db,
+        internalState: createInternalState(),
+        externalState: {
+            active: false,      // should update the values?
+            lastUpdate: 0,      // epoch seconds of last update
+            sellRemote: false,
+            detailed: false,
+            businesses: createBusinesses(),
+        }
+    },
     methods: {
-        toggle: function (todo) {
-            todo.done = !todo.done
-        },
         // calculates remaining time in seconds to complete the full stock, assuming there
         // are enough supplies.
         etaFullStock: function (biz) {
-            return this.secsToProduce(biz.capacity - biz.stock, biz);
+            return this.secsToProduce(this.db.businesses[biz.id].capacity * (1 - biz.stock/5), biz);
         },
         // calculates remaining time in seconds to consume the current supplies, assuming
         // the business is active, and the stock is not full.
         etaResupply: function (biz) {
-            return this.secsToProduce(biz.supplies * biz.resupplyUnits, biz);
+            return this.secsToProduce(this.db.businesses[biz.id].resupplyUnits *  biz.supplies / 5, biz);
         },
         // calculates how much time is required to produce the given units in seconds.
         secsToProduce: function (units, biz) {
-            var activeUpgrade = biz.upgrades[biz.upgrade];
+            var activeUpgrade = db.businesses[biz.id].upgrades[biz.upgrade];
             return units * activeUpgrade.mins * 60;
         },
         // pauses the game, thefore the computation of values
         pauseGame: function () {
-            this.active = false;
+            this.externalState.active = false;
         },
         // activates the game, thefore the computation of values
         activateGame: function () {
-            this.active = true;
-            this.lastUpdate = (new Date()).getTime() / 1000;
-        },
-        // changes the business upgrade
-        changeBiz: function (index, delta) {
-            var biz = this.businesses[index];
-            biz.upgrade += delta;
-            if (biz.upgrade >= biz.upgrades.length) {
-                biz.upgrade = biz.upgrades.length - 1;
-            }
-            if (biz.upgrade < 0) {
-                biz.upgrade = 0
-            }
-        },
-        // changes stock value of a business by a percentage of the max stock
-        changeStock: function (index, delta) {
-            var biz = this.businesses[index];
-            biz.stock += delta * biz.capacity;
-            if (biz.stock > biz.capacity) {
-                biz.stock = biz.capacity;
-            }
-            if (biz.stock < 0) {
-                biz.stock = 0
-            }
-        },
-        // changes supplies value of a business by a percertage
-        changeSupplies: function (index, delta) {
-            var biz = this.businesses[index];
-            biz.supplies += delta;
-            if (biz.supplies > 1) {
-                biz.supplies = 1;
-            }
-            if (biz.supplies < 0) {
-                biz.supplies = 0;
-            }
+            this.externalState.active = true;
+            this.externalState.lastUpdate = (new Date()).getTime() / 1000;
         },
         // recalculates the stock and supplies values of the business
         tick: function () {
             // check if game is active or not
-            if (!this.active) {
+            if (!this.externalState.active) {
                 return;
             }
             var now = (new Date()).getTime() / 1000;  // epoch secs
-            var deltaTime = now - this.lastUpdate;
+            var deltaTime = now - this.externalState.lastUpdate;
 
             if (deltaTime < 0.5) {
                 return;
             }
 
-            this.lastUpdate = now;
+            this.externalState.lastUpdate = now;
 
             // deltaTime = deltaTime * 120; // debugger: time multiplier
 
-            for (var i = 0; i < this.businesses.length; i++) {
-                var biz = this.businesses[i];
-                var upgrade = biz.upgrades[biz.upgrade];
+            for (var i = 0; i < this.externalState.businesses.length; i++) {
+                var biz = this.externalState.businesses[i];
+                var bizDb = this.db.businesses[biz.id];
+                var upgrade = bizDb.upgrades[biz.upgrade];
 
-                if (biz.type === 'nightclub') {
-                    biz.supplies = biz.active ? biz.capacity : 0;
+                if (bizDb.type === 'nightclub') {
+                    biz.supplies = biz.active ? 5 : 0;
                 }
 
                 if (biz.resupply) {
                     biz.resupplyTimer = biz.resupplyTimer - deltaTime;
                     if (biz.resupplyTimer < 0) {
                         biz.resupply = false;
-                        biz.supplies = 1;
+                        biz.supplies = 5;
                     }
                 }
 
 
                 // calculate if business is active or not
-                if (biz.supplies == 0 || biz.stock == biz.capacity || biz.editMode) {
+                if (biz.supplies <= 0 || biz.stock >= 5) {
                     continue;
                 }
-
-                
 
                 var unitsPerSec = 1 / (upgrade.mins * 60);
                 var deltaUnits = deltaTime * unitsPerSec;
 
+                var bizStockUnits = bizDb.capacity * biz.stock / 5;
+
                 // check we don't exceed the stock limit
-                if (biz.stock + deltaUnits > biz.capacity) {
-                    deltaUnits = biz.capacity - biz.stock;
+                if (bizStockUnits + deltaUnits > bizDb.capacity) {
+                    deltaUnits = bizDb.capacity - bizStockUnits;
                 }
 
                 // check we don't consume more than is available
-                if (biz.supplies * biz.resupplyUnits - deltaUnits < 0) {
-                    deltaUnits = biz.supplies * biz.resupplyUnits;
+                if (bizDb.resupplyUnits * biz.supplies / 5 - deltaUnits < 0) {
+                    deltaUnits = bizDb.resupplyUnits * biz.supplies / 5;
                 }
 
-                biz.stock = biz.stock + deltaUnits;
-                if (biz.stock > biz.capacity) {
-                    biz.stock = biz.capacity;
+                biz.stock = biz.stock + 5 * deltaUnits / bizDb.capacity;
+                if (biz.stock > bizDb.capacity) {
+                    biz.stock = 5;
                 }
-                biz.supplies = biz.supplies - deltaUnits / biz.resupplyUnits;
+                biz.supplies = biz.supplies - 5 * deltaUnits / bizDb.resupplyUnits;
                 if (biz.supplies < 0.000001) {
                     biz.supplies = 0;
                 }
             }
-        },
-        // show resupply dialog
-        showChangeSuppliesDialog: function (index) {
-            this.resupplyIdx = index;
-            $('#resupplyValueTxt').val("" + (100 * this.businesses[index].supplies));
-            $('#resupplyModal').modal();
-        },
-        // confirm resupply. resupply was accepted
-        confirmSuppliesDialog: function () {
-            var biz = this.businesses[this.resupplyIdx];
-            biz.supplies = parseFloat($('#resupplyValueTxt').val() / 100);
-            if (biz.supplies > 1) {
-                biz.supplies = 1;
-            }
-            if (biz.supplies < 0) {
-                biz.supplies = 0;
-            }
-            $('#resupplyModal').modal('hide');
+
+            this.$router.replace({
+                path: "?q=" + JSON.stringify(this.externalState),
+            });
         },
         bizHeader: function (biz) {
             var threshold = 15 * 60; // 15 minutes
-            var isActive = biz.supplies > 0 && biz.stock < biz.capacity;
+            var isActive = biz.supplies > 0 && biz.stock < 5;
             var isWarning = this.etaFullStock(biz) < threshold || this.etaResupply(biz) < threshold ;
             if (!isActive) {
                 return ['text-light', 'bg-danger'];
@@ -477,32 +436,25 @@ var myVueApp = new Vue({
         },
 
         editBiz: function (biz, attr) {
-            Vue.set(biz, 'edit-' + attr, true)
-
-            if (!biz.savedValue) {
-                biz.savedValue = {};
-            }
-            biz.savedValue[attr] = biz[attr];
-            if (attr === 'stock') {
-                biz[attr + 'Bars'] = Math.round(5 * biz.stock / biz.capacity * 10) / 10;
-            } else if (attr === 'supplies') {
-                biz[attr + 'Bars'] = Math.round(5 * biz.supplies * 10) / 10;
-            }
-
+            this.internalState.businesses[biz.id][attr + '-edit'] = true;
+            this.internalState.businesses[biz.id][attr + '-edit-value'] = Math.round(biz[attr] * 10) / 10;
+            this.internalState.businesses[biz.id][attr + '-edit-saved'] = biz[attr];
         },
 
         acceptBizChange: function (biz, attr) {
-            Vue.set(biz, 'edit-' + attr, false);
+            this.internalState.businesses[biz.id][attr + '-edit'] = false;
+            biz[attr] = this.internalState.businesses[biz.id][attr + '-edit-value'];
         },
 
         cancelBizChange: function (biz, attr) {
-            Vue.set(biz, 'edit-' + attr, false)
-            biz[attr] = biz.savedValue[attr];
+            this.internalState.businesses[biz.id][attr + '-edit'] = false;
+            biz[attr] = this.internalState.businesses[biz.id][attr + '-edit-saved'];
         },
 
         resupply: function (biz) {
             Vue.set(biz, 'resupply', true);
             Vue.set(biz, 'resupplyTimer', 10 * 60);  // 10 mins
+            Vue.set(biz, 'resupplyTimer', 30);  // 30 secs
         },
     },
     computed: {
@@ -526,9 +478,10 @@ var myVueApp = new Vue({
             }
             // render seconds
             secs = Math.floor(secs);
-            if (acum == "" && secs > 0) {
-                acum = acum + "" + secs + "s"
-            }
+            // if (acum == "" && secs > 0) {
+            //     acum = acum + "" + secs + "s"
+            // }
+            acum = acum + "" + secs + "s"
             return acum;
         },
 
@@ -556,6 +509,10 @@ var myVueApp = new Vue({
 
         }
 
+    },
+    mounted: function() {
+        q = this.$route.query.q
+        console.log(q)
     },
 });
 
