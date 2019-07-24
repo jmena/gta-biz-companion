@@ -517,6 +517,9 @@ var myVueApp = new Vue({
     },
     mounted: function() {
         var query = this.$route.query.q
+        if (!query || query === "") {
+            return;
+        }
         this.externalState = JSON.parse(query);
         this.externalState.active = false;
     },
