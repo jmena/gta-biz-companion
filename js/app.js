@@ -456,7 +456,6 @@ var myVueApp = new Vue({
         resupply: function (biz) {
             Vue.set(biz, 'resupply', true);
             Vue.set(biz, 'resupplyTimer', 10 * 60);  // 10 mins
-            Vue.set(biz, 'resupplyTimer', 30);  // debug: 30 secs
         },
 
         saveState: function () {
