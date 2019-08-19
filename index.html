@@ -65,35 +65,41 @@
     <div class="card border mb-3" v-if="internalState.editBusinesses">
         <div class="card-body">
             <h5 class="card-title">Edit businesses</h5>
-            
+
             <div class="row" v-for="(biz, index) in externalState.businesses">
                 <div class="col">
                     {{db.businesses[biz.id].name}}
 
-                    <dl class="row">
-                        <dd class="col-sm-2 text-right">Upgrade</dd>
-                        <dd class="col-sm-10">
-                            <select v-model="biz.upgrade">
-                                <option v-for="(upgrade, upgIdx) in db.businesses[biz.id].upgrades" v-bind:value="upgIdx">
-                                    {{ upgrade.name }}
-                                </option>
-                            </select>
-                        </dd>
-
-                        <dd class="col-sm-2 text-right">Active</dd>
-                        <dd class="col-sm-10">
-                            <input type="checkbox" v-model="biz.active">
-                        </dd>
-                    </dl>
+                    <form>
+                        <div class="form-group row">
+                            <div class="col-sm-2 col-form-label">Upgrade</div>
+                            <div class="col-sm-10">
+                                <select v-model="biz.upgrade" class="form-control">
+                                    <option v-for="(upgrade, upgIdx) in db.businesses[biz.id].upgrades" v-bind:value="upgIdx">
+                                        {{ upgrade.name }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-2">Active</div>
+                            <div class="col-sm-10">
+                                <div class="form-check">
+                                    <input type="checkbox" v-model="biz.active" class="form-check-input">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
+
         </div>
     </div>
 
 
     <div class="row">
-        <div class="col">
-            <table class="table table-sm">
+        <div class="col  table-responsive-sm">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -126,7 +132,9 @@
                                     <input class="text-right edit-text-box"
                                            type="number"
                                            :ref="'txt-stock-edit-'  + biz.id"
-                                           v-model.number="internalState.businesses[biz.id]['stock-edit-value']">
+                                           v-model.number="internalState.businesses[biz.id]['stock-edit-value']"
+                                           v-on:keyup.enter="acceptBizChange(biz, 'stock')"
+                                           v-on:keyup.escape="cancelBizChange(biz, 'stock')">
                                     <small><span class="oi oi-check" v-on:click="acceptBizChange(biz, 'stock')"></span></small>
                                     <small><span class="oi oi-x" v-on:click="cancelBizChange(biz, 'stock')"></span></small>
                                 </template>
@@ -147,7 +155,9 @@
                                     <input class="text-right edit-text-box"
                                            type="number"
                                            :ref="'txt-supplies-edit-'  + biz.id"
-                                           v-model.number="internalState.businesses[biz.id]['supplies-edit-value']">
+                                           v-model.number="internalState.businesses[biz.id]['supplies-edit-value']"
+                                           v-on:keyup.enter="acceptBizChange(biz, 'supplies')"
+                                           v-on:keyup.escape="cancelBizChange(biz, 'supplies')">
                                     <small><span class="oi oi-check" v-on:click="acceptBizChange(biz, 'supplies')"></span></small>
                                     <small><span class="oi oi-x" v-on:click="cancelBizChange(biz, 'supplies')"></span></small>
                                 </template>
@@ -176,8 +186,8 @@ list of TODO features:
 
 [x] allow to edit upgrade
 [x] allow to save/restore state (in the url)
--   allow to press ENTER to accept changes and ESC to cancel
--   edit gain focus of the textbox
+[x] allow to press ENTER to accept changes and ESC to cancel
+[x] edit gain focus of the textbox
 -   Better support for NC:
     [x] allow to select which businesses has technicians
 [x] use less space in screen. It would be nice to see only the critical information. ETA.
@@ -195,7 +205,7 @@ list of TODO features:
 -   ETA for raid
 -   support research in bunker
 -   support for hangar
--   support for cargo
+-   support for special cargo
 -   support for special vehicles
 -   opt: allow to set the supplies and stock in money
 -   support for grinding cycles

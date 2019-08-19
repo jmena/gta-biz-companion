@@ -2,6 +2,7 @@
 // - https://tinyurl.com/y23wphkm
 // - https://youtu.be/jVx5aRcDoz4?t=162
 // - https://tinyurl.com/ybnqdru5
+// - https://gta.fandom.com/wiki/The_Open_Road
 //
 // Nightclub:
 // - https://gtaforums.com/topic/912818-business-knowledge-base-after-hours/page/4/?tab=comments#comment-1070339962
@@ -39,7 +40,7 @@ var db = {
             type: "regular",
             capacity: 10.0,
             resupplyCost: 75000.0,
-            resupplyUnits: 3.33333333333333333333,
+            resupplyUnits: 4,
             vehicles: [
                 {units: 6.0, count: 4},
                 {units: 2.5, count: 3},
@@ -59,7 +60,7 @@ var db = {
             type: "regular",
             capacity: 20.0,
             resupplyCost: 75000.0,
-            resupplyUnits: 6.66666666666666666667,
+            resupplyUnits: 8,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
@@ -73,6 +74,7 @@ var db = {
         "cc": {
             id: "cc",
             name: "Counterfeit cash",
+            shortName: "Cash",
             type: "regular",
             capacity: 40.0,
             resupplyCost: 75000.0,
@@ -93,7 +95,7 @@ var db = {
             type: "regular",
             capacity: 80.0,
             resupplyCost: 75000.0,
-            resupplyUnits: 40.0,
+            resupplyUnits: 50.0,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
@@ -107,10 +109,11 @@ var db = {
         "df": {
             id: "df",
             name: "Documents Forgery",
+            shortName: "Docs",
             type: "regular",
             capacity: 60.0,
             resupplyCost: 75000.0,
-            resupplyUnits: 60.0,
+            resupplyUnits: 50.0,
             vehicles: [
                 {units: 10000, count: 100}, // na
             ],
@@ -413,23 +416,18 @@ var myVueApp = new Vue({
             }
         },
 
-        handleChangeAttr: function (target, biz, attr) {
-            var number = Number.parseFloat(target.value);
-            if (Number.isNaN(number)) {
-                number = 0;
+        validateBars: function (bars) {
+            if (Number.isNaN(bars)) {
+                return 0;
             }
-            if (number < 0) {
-                number = 0;
+            if (bars < 0) {
+                return 0;
             }
-            if (number > 5) {
-                number = 5;
+            if (bars > 5) {
+                return 5;
             }
 
-            if (attr === 'stock') {
-                biz[attr] = biz.capacity * number / 5;
-            } else if (attr === 'supplies') {
-                biz[attr] = number / 5;
-            }
+            return bars;
         },
 
         editBiz: function (biz, attr) {
@@ -445,7 +443,7 @@ var myVueApp = new Vue({
 
         acceptBizChange: function (biz, attr) {
             this.internalState.businesses[biz.id][attr + '-edit'] = false;
-            biz[attr] = this.internalState.businesses[biz.id][attr + '-edit-value'];
+            biz[attr] = this.validateBars(this.internalState.businesses[biz.id][attr + '-edit-value']);
         },
 
         cancelBizChange: function (biz, attr) {
@@ -472,26 +470,28 @@ var myVueApp = new Vue({
     filters: {
         // formats seconds to human format
         formatTime: function (secs) {
-            var acum = "";
+            var hours = 0;
+            var mins = 0;
             if (secs > 3600) {
-                // render hours
-                var hours = Math.floor(secs / 3600);
-                acum = acum + "" + hours + "h "
+                hours = Math.floor(secs / 3600);
                 secs = secs - hours * 3600;
             }
             if (secs > 60) {
-                // render minutes
-                var mins = Math.floor(secs / 60);
-                acum = acum + "" + mins + "m "
-                secs = secs - mins * 60;
+                mins = Math.floor(secs / 60);
+                secs = Math.floor(secs - mins * 60);
             }
-            // render seconds
             secs = Math.floor(secs);
-            // if (acum == "" && secs > 0) {
-            //     acum = acum + "" + secs + "s"
-            // }
-            acum = acum + "" + secs + "s"
-            return acum;
+
+            if (hours > 0) {
+                return hours + ":" + ("0" + mins).slice(-2);
+            }
+            if (mins > 0) {
+                return  "" + mins;
+            }
+            if (secs > 0) {
+                return secs + "s"
+            }
+            return "";
         },
 
         // rounds a number to the given amount of decimals
@@ -514,8 +514,8 @@ var myVueApp = new Vue({
                 currency: 'USD',
                 minimumFractionDigits: 0
             });
-            return formatter.format(number);
-
+            return (Math.floor(number / 100) / 10) + "K";
+            // return formatter.format(number);
         }
 
     },
